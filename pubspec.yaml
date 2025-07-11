@@ -1,5 +1,5 @@
 name: macro_measure
-description: "A new Flutter project."
+description: "Allows users to figure out how much of a food they need to eat to hit a certain macro."
 publish_to: 'none'
 version: 0.1.0
 

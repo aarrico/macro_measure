@@ -32,10 +32,10 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
   final _proteinController = TextEditingController();
   final _carbsController = TextEditingController();
   final _fatController = TextEditingController();
-  
+
   String? _selectedFood;
   double _calculatedWeight = 0.0;
-  
+
   // Sample food database with macros per 100g
   final Map<String, Map<String, double>> _foodDatabase = {
     'Chicken Breast': {'protein': 31.0, 'carbs': 0.0, 'fat': 3.6},
@@ -50,22 +50,22 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
 
   void _calculateFoodWeight() {
     if (_formKey.currentState!.validate() && _selectedFood != null) {
-      final targetProtein = double.parse(_proteinController.text);
-      final targetCarbs = double.parse(_carbsController.text);
-      final targetFat = double.parse(_fatController.text);
-      
+      final targetProtein = double.tryParse(_proteinController.text) ?? 0.0;
+      final targetCarbs = double.tryParse(_carbsController.text) ?? 0.0;
+      final targetFat = double.tryParse(_fatController.text) ?? 0.0;
+
       final foodMacros = _foodDatabase[_selectedFood!]!;
-      
+
       // Calculate weight needed based on the macro that requires the most food
       double weightForProtein = targetProtein / foodMacros['protein']! * 100;
       double weightForCarbs = targetCarbs / foodMacros['carbs']! * 100;
       double weightForFat = targetFat / foodMacros['fat']! * 100;
-      
+
       // Use the maximum weight needed (limiting factor)
       double maxWeight = [weightForProtein, weightForCarbs, weightForFat]
           .where((w) => w.isFinite)
           .reduce((a, b) => a > b ? a : b);
-      
+
       setState(() {
         _calculatedWeight = maxWeight;
       });
@@ -103,10 +103,9 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter protein amount';
-                        }
-                        if (double.tryParse(value) == null) {
+                        if (value != null &&
+                            value.isNotEmpty &&
+                            double.tryParse(value) == null) {
                           return 'Enter valid number';
                         }
                         return null;
@@ -123,10 +122,9 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter carbs amount';
-                        }
-                        if (double.tryParse(value) == null) {
+                        if (value != null &&
+                            value.isNotEmpty &&
+                            double.tryParse(value) == null) {
                           return 'Enter valid number';
                         }
                         return null;
@@ -143,10 +141,9 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
                       ),
                       keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Enter fat amount';
-                        }
-                        if (double.tryParse(value) == null) {
+                        if (value != null &&
+                            value.isNotEmpty &&
+                            double.tryParse(value) == null) {
                           return 'Enter valid number';
                         }
                         return null;
@@ -209,7 +206,8 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
                       children: [
                         const Text(
                           'Result',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -223,7 +221,8 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
                             '• ${(_calculatedWeight * _foodDatabase[_selectedFood!]!['protein']! / 100).toStringAsFixed(1)}g protein\n'
                             '• ${(_calculatedWeight * _foodDatabase[_selectedFood!]!['carbs']! / 100).toStringAsFixed(1)}g carbs\n'
                             '• ${(_calculatedWeight * _foodDatabase[_selectedFood!]!['fat']! / 100).toStringAsFixed(1)}g fat',
-                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey),
                           ),
                       ],
                     ),
@@ -235,7 +234,7 @@ class _MacroCalculatorScreenState extends State<MacroCalculatorScreen> {
       ),
     );
   }
-  
+
   @override
   void dispose() {
     _proteinController.dispose();
